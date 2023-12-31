@@ -65,6 +65,6 @@
 /* Estilos do formulário com a animação de mudança de cores */
 .form-with-color-animation {
   animation: changeColors 5s linear infinite;
-  /* Outros estilos do formulário... */
+ 
 }
 </style>

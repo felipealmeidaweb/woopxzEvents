@@ -1,10 +1,12 @@
 <template>
-  <div class="background">
+  <div class="main">
     <Navbar/>
-    <div class="container">
-      <router-view />
+    <div class="background">
+      <div class="container">
+        <router-view />
+      </div>
     </div>
-    <Footer/>
+    <Footer/> 
   </div>
 </template>
 
@@ -12,7 +14,7 @@
 import Navbar from "../src/components/Navbar.vue"
 import Footer from "../src/components/Footer.vue"
 
-export default{
+export default {
   name: "App",
   components: {
     Navbar,
@@ -36,7 +38,7 @@ export default{
 }
 
 .container {
-  height: 83vh;
+  height: 100vh;
 }
 
 @keyframes gradientAnimation {
@@ -50,4 +52,11 @@ export default{
     background-position: 0% 50%;
   }
 }
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 </style>

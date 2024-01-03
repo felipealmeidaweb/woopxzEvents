@@ -1,128 +1,101 @@
-
-
 const router = require("express").Router();
 const bcrypy = require("bcrypt");
-const jwt = require("jsonwebtoken")
-const User = require("../models/user")
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
+// Rota para registrar um novo usuário
+router.post("/register", async (req, res) => {
+    const name = req.body.name;
+    const email = req.body.email;
+    const password = req.body.password;
+    const confirmpassword = req.body.confirmpassword;
 
-
-// register an user
-
-router.post("/register" ,async(req,res)=>{
-
-    const name = req.body.name
-    const email = req.body.email
-    const password = req.body.password
-    const confirmpassword = req.body.confirmpassword
-
-    //check  fields
-
-    if(!name || !email || !password ||!confirmpassword){
-        return  res.status(400).json({error:"preencha todos os campos"})
+    // Verifica se todos os campos foram preenchidos
+    if (!name || !email || !password || !confirmpassword) {
+        return res.status(400).json({ error: "Preencha todos os campos" });
     }
 
-    //check if password matchs
-
-    if(password != confirmpassword){
-        return res.status(400).json({error:"as senhas não conferem"})
+    // Verifica se as senhas fornecidas coincidem
+    if (password !== confirmpassword) {
+        return res.status(400).json({ error: "As senhas não conferem" });
     }
 
-    //check if user exists
-
-    const emailExists = await User.findOne({email:email})
-
-    if(emailExists){
-        return res.status(400).json({error:"o email informado já esta em uso, tente outro por favor"})
+    // Verifica se o e-mail já está em uso
+    const emailExists = await User.findOne({ email: email });
+    if (emailExists) {
+        return res.status(400).json({ error: "O email informado já está em uso, tente outro por favor" });
     }
 
-    // create password
-
-    const salt = await bcrypy.genSalt(12)
+    // Cria o hash da senha antes de armazenar no banco de dados
+    const salt = await bcrypy.genSalt(12);
     const passwordHash = await bcrypy.hash(password, salt);
-    console.log(passwordHash)
 
+    // Cria um novo usuário com os dados fornecidos
     const user = new User({
-        name:name,
-        email:email,
-        password:passwordHash
-
+        name: name,
+        email: email,
+        password: passwordHash
     });
+
     try {
+        // Salva o novo usuário no banco de dados
         const newUser = await user.save();
 
-
-        // create token 
+        // Cria um token para o novo usuário
         const token = jwt.sign(
-            //payload
-
+            // Payload do token
             {
-                name:newUser.name,
-                id:newUser.id
+                name: newUser.name,
+                id: newUser.id
             },
             "254080"
-        )
-        //return token
+        );
 
-        res.json({error:null, msg:"cadastro realizado" , token:token , userId: newUser._id})
-        
+        // Retorna o token e o ID do novo usuário
+        res.json({ error: null, msg: "Cadastro realizado", token: token, userId: newUser._id });
     } catch (error) {
-        res.status(400).json({error:"erro interno com o banco"})
-        
+        res.status(400).json({ error: "Erro interno com o banco" });
     }
-})
+});
 
-
-
-// login router user
-
+// Rota para autenticar o usuário e realizar o login
 router.post("/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
     try {
-        // Verificar se o usuário existe
+        // Busca o usuário no banco de dados pelo e-mail fornecido
         const user = await User.findOne({ email: email });
 
         if (!user) {
             return res.status(404).json({ error: "O usuário não existe" });
         }
 
-
-
-        //check if passoword match
-        const checkPassword = await bcrypy.compare(password , user.password);
-        if(!checkPassword){
-            return res.status(404).json({ error: "senha invalida" }) 
+        // Verifica se a senha fornecida coincide com a senha armazenada
+        const checkPassword = await bcrypy.compare(password, user.password);
+        if (!checkPassword) {
+            return res.status(404).json({ error: "Senha inválida" });
         }
 
-
-
-         // create token 
-         const token = jwt.sign(
-            //payload
-
+        // Cria um token para o usuário autenticado
+        const token = jwt.sign(
+            // Payload do token
             {
-                name:user.name,
-                id:user.id
+                name: user.name,
+                id: user.id
             },
             "254080"
-        )
-        //return token
+        );
 
-        res.json({error:null, msg:"login realizado" , token:token , userId: user._id})
-        
+        // Retorna o token e o ID do usuário autenticado
+        res.json({ error: null, msg: "Login realizado", token: token, userId: user._id });
 
         // Restante do seu código de autenticação...
 
     } catch (error) {
-        console.error(error); // Log do erro no console para debug
-
-        // Se ocorrer um erro durante a busca do usuário, responda com um erro 500 (erro interno do servidor)
+        console.error(error);
         return res.status(500).json({ error: "Ocorreu um erro ao processar a solicitação" });
     }
 });
 
 module.exports = router;
-
-

@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <UseForm :user="{}" page="register" btnText="Cadastrar"/>
+    <UseForm :user="{}" page="register" btnText="Cadastrar" title="Cadastre-se"/>
 
   </div>
   

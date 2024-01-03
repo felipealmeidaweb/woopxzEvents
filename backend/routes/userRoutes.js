@@ -4,10 +4,12 @@ const User = require("../models/user");
 const verifyToken = require("../helpers/check-token");
 const getUserByToken = require("../helpers/get-user-by-token");
 
+// Rota para obter informações de um usuário pelo ID
 router.get("/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
 
     try {
+        // Busca o usuário no banco de dados pelo ID, excluindo o campo de senha
         const user = await User.findOne({ _id: id }, { password: 0 });
         res.json({ error: null, user });
     } catch (error) {
@@ -15,7 +17,8 @@ router.get("/:id", verifyToken, async (req, res) => {
     }
 });
 
-router.put("/", verifyToken, async (req, res) => {
+// Rota para atualizar informações de um usuário
+router.patch("/", verifyToken, async (req, res) => {
     const token = req.header("auth-token");
     const user = await getUserByToken(token);
     const userReqId = req.body.id;
@@ -24,7 +27,8 @@ router.put("/", verifyToken, async (req, res) => {
 
     const userId = user._id.toString();
 
-    if (userId !== userReqId) { // Correção no operador de comparação
+    // Verifica se o usuário autenticado é o mesmo que está sendo atualizado
+    if (userId !== userReqId) {
         return res.status(401).json({ error: "Acesso negado" });
     }
 
@@ -33,12 +37,13 @@ router.put("/", verifyToken, async (req, res) => {
         email: req.body.email,
     };
 
+    // Verifica se as senhas fornecidas coincidem
     if (password !== confirmpassword) {
         return res.status(400).json({ error: "As senhas não conferem" });
     } else if (password && password !== null) {
         try {
             const salt = await bcrypt.genSalt(12);
-            const passwordHash = await bcrypt.hash(password, salt); // Correção na geração do hash
+            const passwordHash = await bcrypt.hash(password, salt); // Gera o hash da nova senha
 
             updateData.password = passwordHash;
         } catch (err) {
@@ -47,6 +52,7 @@ router.put("/", verifyToken, async (req, res) => {
     }
 
     try {
+        // Atualiza as informações do usuário no banco de dados
         const updatedUser = await User.findByIdAndUpdate({ _id: userId }, { $set: updateData }, { new: true });
         res.json({ error: null, msg: "Usuário atualizado com sucesso!", data: updatedUser });
     } catch (error) {

@@ -19,18 +19,39 @@
       >
         Home
       </router-link>
-      <router-link
-        to="/about"
+      <router-link v-show="!authenticated"
+        to="/login"
         class="text-Trippant-5-hex hover:text-Trippant-4-hex transition duration-300"
       >
         Entrar
       </router-link>
-      <router-link
+
+      <router-link v-show="authenticated"
+        to="/dashboard"
+        class="text-Trippant-5-hex hover:text-Trippant-4-hex transition duration-300"
+      >
+        Dashboard
+      </router-link>
+      <router-link v-show="authenticated"
+        to="/profile"
+        class="text-Trippant-5-hex hover:text-Trippant-4-hex transition duration-300"
+      >
+        Configurações
+      </router-link>
+
+
+      <router-link v-show="!authenticated"
         to="/register"
         class="text-Trippant-5-hex hover:text-Trippant-4-hex transition duration-300"
       >
         Cadastrar
       </router-link>
+      <button class="bg-Trippant-2-hex text-zinc-100 hover:cursor-pointer rounded-lg py-2 px-4 hover:bg-opacity-80 transition duration-300 hover:bg-Trippant-4-hex hover:text-white" @click="logout($event)" v-show="authenticated">
+        Logout
+      </button>
+
+
+
     </div>
   </nav>
 </template>
@@ -67,3 +88,31 @@
   }
 }
 </style>
+
+<script>
+
+import { mapState } from 'vuex'
+export default{
+  name:"Navbar",
+  methods:{
+    logout(e){
+      e.preventDefault()
+
+      // event to logout userr
+
+      this.$store.commit("logout")
+
+
+      //redirect
+
+      this.$router.push("/")
+    },
+    
+  },
+  computed:{
+    ...mapState([
+      "authenticated"
+    ])
+  }
+}
+</script>

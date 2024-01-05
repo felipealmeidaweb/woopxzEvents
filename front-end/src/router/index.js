@@ -51,6 +51,30 @@ const routes = [
       requiresAuth: true // Esta rota requer autenticação
     },
     component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue')
+  },
+  {
+    path: '/newparty',
+    name: 'NewParty',
+    meta: {
+      requiresAuth: true // Esta rota requer autenticação
+    },
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/NewParty.vue')
+  },
+  {
+    path: '/editparty/:id',
+    name: 'EditParty',
+    meta: {
+      requiresAuth: true // Esta rota requer autenticação
+    },
+    component: () => import(/* webpackChunkName: "editpary" */ '../views/EditParty.vue')
+  },
+  {
+    path: '/party/:id',
+    name: 'Party',
+    meta: {
+      requiresAuth: true // Esta rota requer autenticação
+    },
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Party.vue')
   }
 ];
 

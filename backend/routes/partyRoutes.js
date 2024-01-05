@@ -171,28 +171,23 @@ router.get("/:id", async (req, res) => {
 
 // delete a party
 
-router.delete("/" , verifyToken , async(req,res)=>{
-    const token = req.header("auth-token")
-    const user = await getUserByToken(token)
+router.delete("/delete", verifyToken, async (req, res) => {
+  try {
+    const token = req.header("auth-token");
+    const user = await getUserByToken(token);
     const userId = user._id.toString();
 
-    const partyId = req.body.partyId
-    
+    const partyId = req.body.id; // Ou req.body.partyId dependendo da estrutura do seu JSON
 
-    try {
-      
-      await Party.deleteOne({_id:partyId , userId:userId})
-      
-      return res.json({error:null , msg:"evento removido com sucesso"})
-    } catch (error) {
-      return res.status(400).json({ error:"Acesso negado" });
-      
-    }
+    await Party.deleteOne({ _id: partyId, userId: userId });
 
-})
+    return res.json({ error: null, msg: "Evento removido com sucesso" });
+  } catch (error) {
+    return res.status(400).json({ error: "Erro ao remover o evento" });
+  }
+});
 
-
-router.put("/", verifyToken, upload.array("photos", 10), async (req, res) => {
+router.patch("/", verifyToken, upload.array("photos", 10), async (req, res) => {
   console.log(req.body);
 
   // Extrai os dados da requisição

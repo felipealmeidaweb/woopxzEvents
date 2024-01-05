@@ -1,12 +1,10 @@
 <template>
-  <div class="main">
-    <Navbar/>
-    <div class="background">
-      <div class="container">
-        <router-view />
-      </div>
+  <div class="flex flex-col min-h-screen">
+    <Navbar />
+    <div class="background flex-1 py-8 overflow-hidden">
+      <router-view />
     </div>
-    <Footer/> 
+    <Footer />
   </div>
 </template>
 
@@ -24,21 +22,9 @@ export default {
 </script>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .background {
-  min-height: 100vh;
-  background: linear-gradient(to right, #3B3C40, #0A0B0D, #BFBFBF);
-  background-size: 400% 400%;
+  background-image: linear-gradient(to right, #3B3C40, #0A0B0D, #BFBFBF);
   animation: gradientAnimation 15s ease infinite;
-}
-
-.container {
-  height: 100vh;
 }
 
 @keyframes gradientAnimation {
@@ -52,11 +38,4 @@ export default {
     background-position: 0% 50%;
   }
 }
-
-.main {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 </style>
